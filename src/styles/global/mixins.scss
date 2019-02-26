@@ -1,0 +1,96 @@
+$black: #000000;
+$white: #ffffff;
+
+//Primary Brand Colors
+$navyblue: #153553;
+$red: #c2463e;
+$orange: #f48238;
+$yellow: #f8b232;
+$green: #81cf4e;
+$blue: #2496d4;
+
+//Secondary Accent Colors
+$teal: #30e0cd;
+$pink: #ff6ec7;
+$purple: #8659a4;
+$lightblue: #69b6df;
+
+//Grays
+$darkgray: #aeaeae;
+$lightgray: #dedede;
+$backgroundgray: #f0f2f6;
+$backgroundbluegray: #f1f2f6;
+$transparentgray: rgba(255, 255, 255, 0.2);
+
+// can be referenced in sass files
+$colors: (
+  black: $black,
+  white: $white,
+  navyblue: $navyblue,
+  red: $red,
+  orange: $orange,
+  yellow: $yellow,
+  green: $green,
+  blue: $blue,
+  teal: $teal,
+  pink: $pink,
+  purple: $purple,
+  lightblue: $lightblue,
+  darkgray: $darkgray,
+  lightgray: $lightgray,
+  backgroundgray: $backgroundgray,
+  backgroundbluegray: $backgroundbluegray,
+  transparentgray: $transparentgray
+);
+
+// can be imported into js files
+:export {
+  black: $black;
+  white: $white;
+  navyblue: $navyblue;
+  red: $red;
+  orange: $orange;
+  yellow: $yellow;
+  green: $green;
+  blue: $blue;
+  teal: $teal;
+  pink: $pink;
+  purple: $purple;
+  lightblue: $lightblue;
+  darkgray: $darkgray;
+  lightgray: $lightgray;
+  backgroundgray: $backgroundgray;
+  backgroundbluegray: $backgroundbluegray;
+  transparentgray: $transparentgray;
+}
+
+$default-transition: 0.2s;
+$default-border: 1px solid $lightgray;
+$default-border-radius: 6px;
+
+$extra-large-font-size: 3rem; // 48px
+$large-font-size: 2rem; // 32px
+$medium-font-size: 1.25rem; // 20px
+$default-font-size: 1rem; // 16px
+$small-font-size: 0.875rem; // 14px
+$extra-small-font-size: 0.625rem; // 10px
+
+@mixin spin {
+  -webkit-animation-name: spin;
+  -webkit-animation-duration: 4000ms;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+  -moz-animation-name: spin;
+  -moz-animation-duration: 4000ms;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-timing-function: linear;
+  -ms-animation-name: spin;
+  -ms-animation-duration: 4000ms;
+  -ms-animation-iteration-count: infinite;
+  -ms-animation-timing-function: linear;
+
+  animation-name: spin;
+  animation-duration: 4000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
