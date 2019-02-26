@@ -1,0 +1,54 @@
+@import './mixins';
+
+.shortline-app {
+  height: 100vh;
+  background: $backgroundgray;
+
+  .app-header {
+    height: 60px;
+    width: 100%;
+    background: $navyblue;
+    border-bottom: 2px solid $teal;
+
+    .app-logo {
+      max-height: 30px;
+      margin-left: 32px;
+      cursor: pointer;
+    }
+
+    .app-header-nav {
+      height: 60px;
+      margin: 0;
+
+      .app-header-nav-item {
+        color: #ffffff;
+        font-weight: 500;
+        text-decoration: none;
+        padding: 21px;
+
+        &:hover {
+          background: $transparentgray;
+        }
+      }
+    }
+  }
+
+  .main-content {
+    height: calc(100vh - 62px);
+    padding: 32px;
+    overflow: hidden;
+
+    .page-header {
+      width: calc(100% - 64px);
+      min-height: 18px;
+      margin: 0 32px;
+      padding: 20px 0;
+      border-bottom: $default-border;
+      cursor: default;
+
+      .page-header-title {
+        color: $blue;
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+.tile {
+  flex: 1;
+  align-self: baseline;
+  min-width: 600px;
+  max-width: calc(50% - 58px);
+  padding: 20px;
+  margin-bottom: 0;
+  background-color: $white;
+  border: $default-border;
+  border-radius: $default-border-radius;
+
+  .tile-title {
+    margin: 0 0 20px;
+    font-size: $medium-font-size;
+    font-weight: 300;
+  }
+
+  .loading-spinner {
+    flex: 2;
+  }
+}

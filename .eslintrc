@@ -1,0 +1,44 @@
+{
+  "parser": "babel-eslint",
+  "extends": ["eslint:recommended", "airbnb", "plugin:prettier/recommended"],
+  "env": {
+    "es6": true,
+    "browser": true,
+    "jest": true
+  },
+  "plugins": ["react", "react-hooks"],
+  "rules": {
+    "arrow-body-style": [0, "always"],
+    "camelcase": ["warn", { allow: [.*\_DisplayLayer$] }],
+    "global-require": "off",
+    "jsx-a11y/anchor-has-content": "off",
+    "jsx-a11y/anchor-is-valid": [ "error", {
+        "components": ["Link"],
+        "specialLink": ["hrefLeft", "hrefRight", "to"],
+        "aspects": ["noHref", "invalidHref", "preferButton"]
+      }],
+    "jsx-a11y/click-events-have-key-events": [0],
+    "jsx-a11y/label-has-for": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": [0],
+    "no-console": [0],
+    "no-nested-ternary": [0],
+    "no-underscore-dangle": "off",
+    "no-use-before-define": ["error", { "functions": false }],
+    "object-shorthand": [2, "properties"],
+    "react/destructuring-assignment": [0],
+    "react/jsx-indent": [0],
+    "react/jsx-no-bind": [2, {
+        "ignoreRefs": true,
+        "allowArrowFunctions": true,
+        "allowBind": false
+      }
+    ],
+    "react/jsx-pascal-case": [0],
+    "react/jsx-wrap-multilines": [2, { "prop": "ignore" }],
+    "react/prefer-stateless-function": [0],
+    "react/require-default-props": "off",
+    "react-hooks/exhaustive-deps": "warn",
+    "react-hooks/rules-of-hooks": "error",
+    "spaced-comment": ["error", "always", { "markers": ["/"] }]
+  }
+}
