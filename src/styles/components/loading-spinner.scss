@@ -1,0 +1,55 @@
+.loading-spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  .loading-spinner-circle {
+    fill: transparent;
+    stroke: $black;
+    stroke-width: 5;
+    animation: dash 2s ease infinite, rotate 2s linear infinite, color 8s linear infinite;
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 95;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 85, 95;
+    stroke-dashoffset: -25;
+  }
+  100% {
+    stroke-dasharray: 85, 95;
+    stroke-dashoffset: -93;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes color {
+  0% {
+    stroke: $teal;
+  }
+  25% {
+    stroke: $pink;
+  }
+  50% {
+    stroke: $lightblue;
+  }
+  75% {
+    stroke: $pink;
+  }
+  100% {
+    stroke: $darkgray;
+  }
+}
