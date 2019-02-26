@@ -1,0 +1,85 @@
+$black: #000000;
+$white: #ffffff;
+
+//Primary Brand Colors
+$navyblue: #153553;
+$red: #c2463e;
+$orange: #f48238;
+$yellow: #f3f315;
+$green: #4dffac;
+$blue: #2496d4;
+
+//Secondary Accent Colors
+$teal: #30e0cd;
+$pink: #ff6ec7;
+$purple: #8659a4;
+$lightblue: #69b6df;
+
+//Grays
+$darkgray: #aeaeae;
+$lightgray: #dedede;
+$backgroundgray: #f0f2f6;
+$backgroundbluegray: #f1f2f6;
+$transparentgray: rgba(255, 255, 255, 0.2);
+
+// can be referenced in sass files
+$colors: (
+  black: $black,
+  white: $white,
+  navyblue: $navyblue,
+  red: $red,
+  orange: $orange,
+  yellow: $yellow,
+  green: $green,
+  blue: $blue,
+  teal: $teal,
+  pink: $pink,
+  purple: $purple,
+  lightblue: $lightblue,
+  darkgray: $darkgray,
+  lightgray: $lightgray,
+  backgroundgray: $backgroundgray,
+  backgroundbluegray: $backgroundbluegray,
+  transparentgray: $transparentgray
+);
+
+// can be imported into js files
+:export {
+  black: $black;
+  white: $white;
+  navyblue: $navyblue;
+  red: $red;
+  orange: $orange;
+  yellow: $yellow;
+  green: $green;
+  blue: $blue;
+  teal: $teal;
+  pink: $pink;
+  purple: $purple;
+  lightblue: $lightblue;
+  darkgray: $darkgray;
+  lightgray: $lightgray;
+  backgroundgray: $backgroundgray;
+  backgroundbluegray: $backgroundbluegray;
+  transparentgray: $transparentgray;
+}
+
+$default-transition: 0.2s;
+$default-border: 1px solid $lightgray;
+$default-border-radius: 6px;
+
+$extra-large-font-size: 3rem; // 48px
+$large-font-size: 2rem; // 32px
+$medium-font-size: 1.25rem; // 20px
+$default-font-size: 1rem; // 16px
+$small-font-size: 0.875rem; // 14px
+$extra-small-font-size: 0.625rem; // 10px
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

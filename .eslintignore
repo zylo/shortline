@@ -1,0 +1,8 @@
+node_modules/*
+public/*
+dist/*
+coverage/*
+config/*
+src/serviceWorker.js
+src/index.js
+src/components/charts/TetrisChart.jsx

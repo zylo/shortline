@@ -1,0 +1,52 @@
+.popover-body {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  z-index: 15;
+  width: auto;
+  height: auto;
+  background: $white;
+  border: $default-border;
+  border-radius: 5px;
+  box-shadow: 1px 2px 5px $lightgray;
+  overflow: hidden;
+  transition: 0.5s;
+  transition-property: visibility;
+  -webkit-transition-property: visibility;
+  -moz-transition-property: visibility;
+
+  &.translucent-bg {
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+  &.visible {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  &.display-left {
+    transform: translateX(-100%);
+
+    &.display-top {
+      transform: translate(-100%, -100%);
+    }
+  }
+
+  &.display-center {
+    transform: translateX(-50%);
+
+    &.display-top {
+      transform: translate(-100%, -100%);
+    }
+  }
+
+  &.display-top {
+    transform: translateY(-100%);
+
+    &.display-left {
+      transform: translate(-100%, -100%);
+    }
+    &.display-center {
+      transform: translate(-50%, -100%);
+    }
+  }
+}
