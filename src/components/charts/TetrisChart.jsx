@@ -1,46 +1,51 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Popover from '../Popover';
-import { fillInColorScale, genKey, findMaxIndices } from '../../utilities/helpers';
+import { fillInColorScale, findMaxIndices, genKey, joinClassName } from '../../utilities/helpers';
 
-const TetrisChart = memo(function TetrisChart({
-  data,
-  viewportX,
-  viewportY,
-  columns,
-  unitsPerColumn,
-  colorScale,
+export default function TetrisChart({
   animate,
+  colorScale = [],
+  columns,
+  data = [],
+  onSectionClick,
   onSectionHover,
-  onSectionClick
+  unitsPerColumn,
+  viewportX,
+  viewportY
 }) {
+  const [chartSections, setChartSections] = useState([]);
+  const [activeSectionOutlinePoints, setActiveSectionOutlinePoints] = useState(null);
+  const [tooltipRef, setTooltipRef] = useState(null);
+  const [tooltipMarkup, setTooltipMarkup] = useState(null);
+
   useEffect(() => {
     setChartSections(drawSections());
     handleSectionMouseLeave();
   }, [data]);
 
-  const handleSectionHover = (index, ref = null) => {
+  function handleSectionHover(index, ref = null) {
     setTooltipRef(ref);
     setTooltipMarkup(data[index] ? onSectionHover(data[index]) : null);
-  };
+  }
 
-  const handleSectionMouseEnter = ({ target }) => {
+  function handleSectionMouseEnter({ target }) {
     handleSectionHover(target.getAttribute('data-index'), target);
     setActiveSectionOutlinePoints(target.getAttribute('points'));
-  };
+  }
 
-  const handleSectionMouseLeave = () => {
+  function handleSectionMouseLeave() {
     handleSectionHover(null);
     setActiveSectionOutlinePoints(null);
-  };
+  }
 
-  const handleSectionClick = (e) => {
+  function handleSectionClick(e) {
     if (typeof onSectionClick === 'function') {
       onSectionClick(e.target.getAttribute('data-index'));
     }
-  };
+  }
 
-  const drawSections = () => {
+  function drawSections() {
     // chart configuration
     const dataTotal = data.reduce((total, { value }) => {
       return total + value;
@@ -224,19 +229,14 @@ const TetrisChart = memo(function TetrisChart({
     });
 
     return sectionData;
-  };
-
-  const [chartSections, setChartSections] = useState([]);
-  const [activeSectionOutlinePoints, setActiveSectionOutlinePoints] = useState(null);
-  const [tooltipRef, setTooltipRef] = useState(null);
-  const [tooltipMarkup, setTooltipMarkup] = useState(null);
+  }
 
   return (
     <div>
       <svg
         viewBox={`0 0 ${viewportX} ${viewportY}`}
         role="img"
-        className={`tetris-chart${onSectionClick ? ' clickable' : ''}`}
+        className={joinClassName('tetris-chart', onSectionClick && 'clickable')}
       >
         {chartSections}
         {activeSectionOutlinePoints && (
@@ -247,35 +247,27 @@ const TetrisChart = memo(function TetrisChart({
           />
         )}
       </svg>
+
       <Popover positionRef={tooltipRef} visible={!!tooltipRef}>
         {tooltipMarkup}
       </Popover>
     </div>
   );
-});
+}
 
 TetrisChart.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string,
-    value: PropTypes.number
-  })),
-  viewportX: PropTypes.number,
-  viewportY: PropTypes.number,
-  columns: PropTypes.number,
-  unitsPerColumn: PropTypes.number,
+  animate: PropTypes.bool,
   colorScale: PropTypes.arrayOf(PropTypes.string),
+  columns: PropTypes.number,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      value: PropTypes.number
+    })
+  ),
+  onSectionClick: PropTypes.func,
   onSectionHover: PropTypes.func,
-  onSectionClick: PropTypes.func
+  unitsPerColumn: PropTypes.number,
+  viewportX: PropTypes.number,
+  viewportY: PropTypes.number
 };
-
-TetrisChart.defaultProps = {
-  data: [],
-  viewportX: 300,
-  viewportY: 75,
-  unitsPerColumn: 10,
-  colorScale: ['#00F9FF', '#F3F315'],
-  animate: true,
-  onSectionHover: () => {}
-};
-
-export default TetrisChart;

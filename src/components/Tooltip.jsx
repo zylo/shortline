@@ -1,81 +1,115 @@
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import React from 'react';
 import Popover from './Popover';
+import { joinClassName } from '../utilities/helpers';
 
-class Tooltip extends React.PureComponent {
-  static propTypes = {
-    className: PropTypes.string,
-    tooltipBody: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
-    children: PropTypes.element,
-    style: PropTypes.shape({}),
-    bodyStyle: PropTypes.shape({}),
-    disableTooltip: PropTypes.bool,
-    allowBodyHover: PropTypes.bool
-  };
+export default function Tooltip({
+  actionContent,
+  allowBodyHover,
+  bodyStyle,
+  children,
+  className,
+  disabled,
+  horizontalDisplay,
+  popoverClassName,
+  text,
+  title,
+  verticalDisplay
+}) {
+  const tooltipRef = useRef(null);
+  const [targetHover, setTargetHover] = useState(false);
+  const [tooltipHover, setTooltipHover] = useState(false);
+  const isVisible = targetHover || tooltipHover;
 
-  static defaultProps = { disableTooltip: false, allowBodyHover: false };
+  useEffect(() => {
+    const tooltip = tooltipRef.current;
 
-  constructor() {
-    super();
+    function showTooltip() {
+      setTargetHover(true);
+    }
 
-    this.tooltipRef = React.createRef();
+    function hideTooltip() {
+      setTargetHover(false);
+    }
 
-    this.state = {
-      iconHover: false,
-      tooltipHover: false
+    tooltip.addEventListener('focus', showTooltip);
+    tooltip.addEventListener('blur', hideTooltip);
+
+    return () => {
+      tooltip.removeEventListener('focus', showTooltip);
+      tooltip.removeEventListener('blur', hideTooltip);
     };
+  }, [setTargetHover]);
+
+  function handleTargetMouseEnter(e) {
+    e.stopPropagation();
+    setTargetHover(true);
   }
 
-  handleIconMouseEnter = () => {
-    if (!this.props.disableTooltip) {
-      this.setState({ iconHover: true });
-    }
-  };
-
-  handleIconMouseLeave = () => {
-    if (this.props.allowBodyHover) {
+  function handleTargetMouseLeave() {
+    if (allowBodyHover) {
       // setTimeout allows time for mouse to leave icon and enter tooltip body
       setTimeout(() => {
-        this.setState({ iconHover: false });
+        setTargetHover(false);
       }, 150);
     } else {
-      this.setState({ iconHover: false });
+      setTargetHover(false);
     }
-  };
+  }
 
-  handleTooltipMouseEnter = () => {
-    if (this.props.allowBodyHover) {
-      this.setState({ tooltipHover: true });
+  function handleTooltipMouseEnter() {
+    if (allowBodyHover) {
+      setTooltipHover(true);
     }
-  };
+  }
 
-  handleTooltipMouseLeave = () => {
-    this.setState({ tooltipHover: false });
-  };
+  function handleTooltipMouseLeave() {
+    setTooltipHover(false);
+  }
 
-  render() {
-    const { children, tooltipBody, style, bodyStyle, className } = this.props;
-    const { iconHover, tooltipHover } = this.state;
-
-    return (
-      <span ref={this.tooltipRef} className={className}>
-        <span onMouseEnter={this.handleIconMouseEnter} onMouseLeave={this.handleIconMouseLeave}>
-          {children}
-        </span>
+  return (
+    <span
+      ref={tooltipRef}
+      className={joinClassName('flex-container zylo-tooltip', className)}
+      role="tooltip"
+    >
+      <span
+        style={{ display: 'inline-flex', width: '100%' }}
+        onMouseEnter={handleTargetMouseEnter}
+        onMouseLeave={handleTargetMouseLeave}
+      >
+        {children}
+      </span>
+      {isVisible && !disabled && (
         <Popover
-          visible={iconHover || tooltipHover}
-          style={style}
-          positionRef={this.tooltipRef.current}
-          handleMouseEnter={this.handleTooltipMouseEnter}
-          handleMouseLeave={this.handleTooltipMouseLeave}
+          visible={isVisible}
+          positionRef={tooltipRef.current}
+          horizontalDisplay={horizontalDisplay}
+          verticalDisplay={verticalDisplay}
+          handleMouseEnter={handleTooltipMouseEnter}
+          handleMouseLeave={handleTooltipMouseLeave}
         >
-          <div className="tooltip-body" style={bodyStyle}>
-            {tooltipBody}
+          <div className={joinClassName('tooltip-body', popoverClassName)} style={bodyStyle}>
+            {title && <div className="tooltip-title">{title}</div>}
+            {text && <div className="tooltip-text">{text}</div>}
+            {actionContent && <div className="tooltip-actions">{actionContent}</div>}
           </div>
         </Popover>
-      </span>
-    );
-  }
+      )}
+    </span>
+  );
 }
 
-export default Tooltip;
+Tooltip.propTypes = {
+  actionContent: PropTypes.element,
+  allowBodyHover: PropTypes.bool,
+  bodyStyle: PropTypes.shape({}),
+  children: PropTypes.oneOfType([PropTypes.element, PropTypes.node, PropTypes.string]),
+  className: PropTypes.string,
+  disabled: PropTypes.bool,
+  horizontalDisplay: PropTypes.oneOf(['center', 'left', 'right']),
+  popoverClassName: PropTypes.string,
+  text: PropTypes.oneOfType([PropTypes.string, PropTypes.object, PropTypes.node]).isRequired,
+  title: PropTypes.string,
+  verticalDisplay: PropTypes.oneOf(['bottom', 'top'])
+};

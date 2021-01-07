@@ -1,143 +1,160 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import React from 'react';
 import ReactDOM from 'react-dom';
-import Measure from 'react-measure';
+import { getObjVal, joinClassName } from '../utilities/helpers';
 
-class Popover extends React.PureComponent {
-  static propTypes = {
-    visible: PropTypes.bool,
-    positionRef: PropTypes.shape({
-      getBoundingClientRect: PropTypes.func
-    }),
-    style: PropTypes.shape({}),
-    displayCenter: PropTypes.bool,
-    children: PropTypes.node,
-    clickToOpen: PropTypes.bool,
-    className: PropTypes.string,
-    handleMouseEnter: PropTypes.func,
-    handleMouseLeave: PropTypes.func,
-    closeAction: PropTypes.func
-  };
+export default function Popover({
+  children,
+  className,
+  enableVerticalRepositioning = true,
+  handleMouseEnter = () => {},
+  handleMouseLeave = () => {},
+  horizontalDisplay = 'right',
+  positionRef,
+  style = {},
+  verticalDisplay = 'top',
+  visible = false
+}) {
+  const clickOutsideRef = useRef({});
+  const popoverBodyRef = useRef({});
+  const popoverPositionRef = useRef(null);
+  const [popoverCoordinates, setPopoverCoordinates] = useState({ x: undefined, y: undefined });
+  const portalTarget = document.getElementById('root');
 
-  static defaultProps = {
-    clickToOpen: false,
-    handleMouseEnter: () => {},
-    handleMouseLeave: () => {}
-  };
+  const calculateTooltipPosition = useCallback(() => {
+    let contentWidth = 0;
+    let contentHeight = 0;
 
-  constructor() {
-    super();
+    if (getObjVal(popoverBodyRef, 'current.getBoundingClientRect')) {
+      const { width, height } = popoverBodyRef.current.getBoundingClientRect();
 
-    this.state = {
-      visible: false,
-      positionRef: null,
-      contentWidth: 0,
-      xCoordinate: null,
-      yCoordinate: null,
-      displayLeft: false,
-      displayCenter: false,
-      displayTop: false
-    };
-  }
-
-  componentDidMount() {
-    if (!this.props.closeAction) {
-      window.addEventListener('scroll', this.scrollListener, true);
+      contentWidth = width;
+      contentHeight = enableVerticalRepositioning ? height : 0;
     }
-  }
 
-  componentWillReceiveProps({ visible, positionRef }) {
-    this.setState({ visible, positionRef }, () => {
-      this.calculateBodyPosition();
-    });
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.scrollListener, true);
-  }
-
-  scrollListener = () => {
-    this.setState({ visible: false });
-  };
-
-  handleBodyWidthChange = ({ bounds }) => {
-    this.setState({ contentWidth: bounds.width }, () => {
-      this.calculateBodyPosition();
-    });
-  };
-
-  calculateBodyPosition = () => {
-    const { positionRef, contentWidth } = this.state;
-
-    if (positionRef) {
+    if (getObjVal(positionRef, 'getBoundingClientRect')) {
       const { innerWidth, innerHeight } = window;
-      const { top, left, bottom, right, height, width } = positionRef.getBoundingClientRect();
-      const iconCenter = left + width / 2;
-      const displayTop = top - height / 2 > innerHeight / 2;
-      const yCoordinate = displayTop ? top - 4 : bottom + 4;
-      let displayLeft = false;
-      let displayCenter = false;
-      let xCoordinate = null;
+      const { top, left, bottom, right, width } = positionRef.getBoundingClientRect();
+      const targetCenter = left + width / 2;
+      const outerAppPadding = 35;
+      const targetBuffer = 4;
+      const leftPosition = left > outerAppPadding ? left : outerAppPadding;
+      const rightPosition = right < innerWidth ? right : innerWidth - outerAppPadding;
+      let position;
+      let x;
+      let y;
 
-      if (this.props.displayCenter) {
-        if (iconCenter > innerWidth - contentWidth) {
-          displayLeft = true;
-          xCoordinate = right;
-        } else if (iconCenter < contentWidth) {
-          xCoordinate = left;
+      if (horizontalDisplay === 'right') {
+        const rightSpace = innerWidth - contentWidth - left;
+
+        if (rightSpace > 0) {
+          position = 'display-right';
+          x = leftPosition;
         } else {
-          displayCenter = true;
-          xCoordinate = iconCenter;
+          position = 'display-left';
+          x = rightPosition;
         }
-      } else {
-        displayLeft = left > innerWidth - contentWidth;
-        xCoordinate = displayLeft ? right : left;
+      } else if (horizontalDisplay === 'center') {
+        if (targetCenter > innerWidth - contentWidth) {
+          position = 'display-left';
+          x = rightPosition;
+        } else if (targetCenter < contentWidth) {
+          position = 'display-right';
+          x = leftPosition;
+        } else {
+          position = 'display-center';
+          x = targetCenter;
+        }
+      } else if (horizontalDisplay === 'left') {
+        const leftSpace = left - contentWidth;
+
+        if (leftSpace > 0) {
+          position = 'display-left';
+          x = rightPosition;
+        } else {
+          position = 'display-right';
+          x = leftPosition;
+        }
       }
 
-      this.setState({ xCoordinate, yCoordinate, displayLeft, displayCenter, displayTop });
+      if (verticalDisplay === 'bottom') {
+        y =
+          innerHeight > bottom + targetBuffer + contentHeight
+            ? bottom + targetBuffer
+            : top - contentHeight - targetBuffer;
+      } else if (verticalDisplay === 'top') {
+        y =
+          top - targetBuffer - contentHeight > 0
+            ? top - contentHeight - targetBuffer
+            : bottom + targetBuffer;
+      }
+
+      popoverPositionRef.current = position;
+      setPopoverCoordinates({ x, y });
     }
-  };
+  }, [enableVerticalRepositioning, horizontalDisplay, positionRef, verticalDisplay]);
 
-  handleClickOutside = () => {
-    const { clickToOpen, closeAction } = this.props;
+  const scrollListener = useCallback(
+    (e) => {
+      if (
+        visible &&
+        getObjVal(e, 'target.getAttribute') &&
+        !e.target.getAttribute('data-disable-scroll-listener')
+      ) {
+        calculateTooltipPosition();
+      }
+    },
+    [calculateTooltipPosition, visible]
+  );
 
-    if (this.state.visible && clickToOpen && closeAction) {
-      closeAction();
+  useEffect(() => {
+    if (visible) {
+      calculateTooltipPosition();
     }
-  };
+  }, [calculateTooltipPosition, children, visible]);
 
-  render() {
-    const { style, children, handleMouseEnter, handleMouseLeave, className } = this.props;
-    const {
-      visible,
-      xCoordinate,
-      yCoordinate,
-      displayLeft,
-      displayCenter,
-      displayTop
-    } = this.state;
+  useEffect(() => {
+    window.addEventListener('scroll', scrollListener, true);
 
-    return ReactDOM.createPortal(
-      <Measure bounds onResize={this.handleBodyWidthChange}>
-        {({ measureRef }) => (
-          <div
-            ref={measureRef}
-            className={`popover-body${xCoordinate && visible ? ' visible' : ''}${
-              displayLeft ? ' display-left' : ''
-            }${displayCenter ? ' display-center' : ''}${
-              displayTop ? ' display-top' : ''
-            } ${className || ''}`}
-            style={{ ...style, top: yCoordinate, left: xCoordinate }}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
+    return () => {
+      window.removeEventListener('scroll', scrollListener, true);
+    };
+  }, [scrollListener]);
+
+  return portalTarget
+    ? ReactDOM.createPortal(
+        <div
+          ref={popoverBodyRef}
+          className={joinClassName(
+            'popover-body',
+            popoverPositionRef.current,
+            className,
+            visible && 'visible'
+          )}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          style={{ ...style, left: popoverCoordinates.x, top: popoverCoordinates.y }}
+        >
+          <div style={{ width: '100%', height: '100%' }} ref={clickOutsideRef}>
             {children}
           </div>
-        )}
-      </Measure>,
-      document.getElementById('root')
-    );
-  }
+        </div>,
+        portalTarget
+      )
+    : null;
 }
 
-export default Popover;
+Popover.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
+  enableVerticalRepositioning: PropTypes.bool,
+  handleMouseEnter: PropTypes.func,
+  handleMouseLeave: PropTypes.func,
+  horizontalDisplay: PropTypes.oneOf(['center', 'left', 'right']),
+  positionRef: PropTypes.shape({
+    getBoundingClientRect: PropTypes.func
+  }),
+  style: PropTypes.shape({}),
+  verticalDisplay: PropTypes.oneOf(['bottom', 'top']),
+  visible: PropTypes.bool
+};
