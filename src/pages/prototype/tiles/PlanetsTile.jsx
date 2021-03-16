@@ -22,7 +22,7 @@ export function PlanetsTile_DisplayLayer({ planetsData }) {
   }
 
   return (
-    <Tile title="Star Wars Planet Diameters (km)" isLoading={true}>
+    <Tile title="Star Wars Planet Diameters (km)" isLoading>
       <TetrisChart data={planetsData} onSectionHover={renderPlanetChartTooltip} />
     </Tile>
   );
@@ -37,7 +37,7 @@ PlanetsTile_DisplayLayer.propTypes = {
   )
 };
 
-// a great spot to fetch third party API data, the useDataLayer hook is...
+// a great spot to fetch third party API data, the useDataLayer hook is... see README.md
 function useDataLayer() {
   return {};
 }

@@ -19,14 +19,14 @@ Front-end code challenge
 1.  Clone the shortline repo `git clone git@github.com:zylo/shortline.git`
 2.  Navigate into the project `cd shortline`
 3.  Create your own code challenge branch `git checkout -b [whatever_you_want_to_name_your_branch]`
-3.  Install dependencies and start the app on localhost `npm install` and `npm start` and open http://localhost:3000 your browser
+4.  Install dependencies and start the app on localhost `npm install` and `npm start` and open http://localhost:3000 your browser
 
 ## Code Submission
+
 1.  Create a private repository on your github account.
 2.  Invite github users jtcarder and foxtrottwist as collaborators in the settings of your private repo.
-2.  Push commits to your code challenge branch of your private repo.
-3.  Open a pull request in your private repo comparing your code challenge branch against `master`  
-
+3.  Push commits to your code challenge branch of your private repo.
+4.  Open a pull request in your private repo comparing your code challenge branch against `master`
 
 ## Code Standards:
 
@@ -63,3 +63,60 @@ Install Jest CLI with `npm install -g jest-cli`
 - run all tests `npm run test`
 - run tests in one file or those that match a regex across all files
   - `jest client/{path to test}/{test name}.jsx`
+
+### Components with Context and API Calls
+
+When need to access `contexts` or make api calls, we use the `useDataLayer` pattern, as demonstrated below. This allows the main component itself to be cleaner, more resilient to change and easier to test. It consists of a wrapping component, a `_DisplayLayer` component and a custom hook (`useDataLayer`) that accesses `contexts`, makes api calls and manages state.
+
+The wrapping component is what is consumed by other components and serves as a layer where props can be passed to the `_DisplayLayer` whether from the consuming component or most importantly from the custom hook, `useDataLayer`.
+
+```jsx
+// MyComponent.jsx
+import React, { useEffect, useState } from 'react';
+import classNames from 'clsx';
+import PropTypes from 'prop-types';
+import { useMadeUpContextUpdate } from './madeUpContext'
+import SomeComponent from '../../components/SomeComponent';
+import { xhrRequest } from '../../utilities/helpers';
+
+export default function MyComponent(props) {
+  return <MyComponent_DisplayLayer {...useDataLayer()} {...props} />
+
+}
+
+MyComponent.propTypes = {
+  className: PropTypes.string,
+  description: PropTypes.string,
+  shouldDoAThing: PropTypes.bool
+}
+
+export function MyComponent_DisplayLayer({ className, data, description } ) {
+  return shouldDoAThing ? (
+    <div className={classNames('styles-styles',  className )}
+      <SomeComponent data={data} />
+    </div>
+  ) : null;
+}
+
+MyComponent_DisplayLayer.propTypes = {
+ className: PropTypes.string,
+ description: PropTypes.string,
+ data: PropTypes.arrayOf(PropTypes.shape({})),
+ shouldDoAThing: PropTypes.bool
+}
+
+function useDataLayer(param) {
+  const { doSomething } = useMadeUpContextUpdate();
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+     xhrRequest.get('https://somerandomsite/com/api').then(({ body }) => {
+      setData(body));
+    });
+  }, [param])
+
+  return {
+    data
+  }
+}
+```

@@ -10,7 +10,7 @@ export default function SpeciesTile() {
 
 export function SpeciesTile_DisplayLayer({ speciesData }) {
   return (
-    <Tile title="Star Wars Species Average Heights (cm)" isLoading={true}>
+    <Tile title="Star Wars Species Average Heights (cm)" isLoading>
       <BarChart data={speciesData} xKey="name" yKey="value" />
     </Tile>
   );
@@ -25,7 +25,7 @@ SpeciesTile_DisplayLayer.propTypes = {
   )
 };
 
-// a great spot to fetch third party API data, the useDataLayer hook is...
+// a great spot to fetch third party API data, the useDataLayer hook is... see README.md
 function useDataLayer() {
   return {};
 }
