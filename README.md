@@ -24,7 +24,7 @@ Front-end code challenge
 ## Code Submission
 
 1.  Create a private repository on your github account.
-2.  Invite github users jtcarder, foxtrottwist & mecrowell as collaborators in the settings of your private repo.
+2.  Invite github users jtcarder, foxtrottwist & wolsieferm as collaborators in the settings of your private repo.
 3.  Push commits to your code challenge branch of your private repo.
 4.  Open a pull request in your private repo comparing your code challenge branch against `master`
 
